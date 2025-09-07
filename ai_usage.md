@@ -14,7 +14,7 @@
     print (seq_record.id)
     print (seq_record.seq)
     print (len(seq_record.seq))
-    print (f"GC content: {gc_percentage:.2f}%") # Print GC percentage
+    print (f"GC content: {gc_percentage:.5f}") # Print GC percentage
     print (f"GC fraction: {gc_fraction:.4f}") # Print GC fraction
     print (seq_record)
 

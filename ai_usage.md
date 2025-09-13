@@ -1,39 +1,34 @@
 # AI Use Log
 - Tool/model & version: ChatGPT
-- What I asked for: Provide code for the following problem.
-- Snippet of prompt(s):
-"Give me the code (don't run any code) for the following problem:
-Given: A DNA string Text and an integer k.
-Return: All most frequent k-mers in Text (in any order)."
+- What I asked for: Provide pseudocode for the Rosalind problem 13.
+- Snippet of prompt(s): Provide pseudocode for the following problem
+"Find a position in a genome minimizing the skew.
+Given: A DNA string Genome.
+Return: All integer(s) i minimizing Skew(Prefixi (Text)) over all values of i (from 0 to |Genome|).
 - What I changed before committing: added
 
-def most_frequent_kmers(Text, k):
-    freq_map = {}
-    max_count = 0
-    result = []
+def MinSkewPositions(Genome):
+  skew_list = [0]
+  min_skew_positions = []
+  for i in range(1, len(Genome)+1):
+    current_skew = skew_list[i-1]
+    if Genome[i-1] == 'C':
+      skew_list.append(current_skew - 1)
+    elif Genome [i-1] == 'G':
+      skew_list.append(current_skew + 1)
+    else: # A or T
+      skew_list.append(current_skew) # A and T don't change the skew
 
-    for i in range(len(Text) - k + 1):
-        pattern = Text[i:i + k]
-        if pattern not in freq_map:
-            freq_map[pattern] = 1
-        else:
-            freq_map[pattern] += 1
+  min_skew = min(skew_list)
 
-        if freq_map[pattern] > max_count:
-            max_count = freq_map[pattern]
+  for i in range(len(skew_list)):
+    if skew_list[i] == min_skew:
+      min_skew_positions.append(i)
 
-    for pattern in freq_map:
-        if freq_map[pattern] == max_count:
-            result.append(pattern)
+  return (min_skew_positions)
 
-    return result
-
-
-Text = "TEXT"
-k = INTEGER
-
-print(most_frequent_kmers(Text, k))
-
+Genome = "CCTATCGGTGGATTAGCATGTCCCTGTACGTTTCGCCGCGAACTAGTTCACACGGCTTGATGGCAAATGGTTTTTCCGGCGACCGTAATCGTCCACCGAG"
+print(MinSkewPositions(Genome))
 
 - How I verified correctness (tests, sample data): Checked with rosalind
-- 
+  

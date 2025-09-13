@@ -1,22 +1,39 @@
 # AI Use Log
-- Tool/model & version: Gemini
-- What I asked for: How to turn GC fraction into percentage.
-- Snippet of prompt(s): "Turn this fraction into percentage"
+- Tool/model & version: ChatGPT
+- What I asked for: Provide code for the following problem.
+- Snippet of prompt(s):
+"Give me the code (don't run any code) for the following problem:
+Given: A DNA string Text and an integer k.
+Return: All most frequent k-mers in Text (in any order)."
 - What I changed before committing: added
 
-    if total_length > 0: # Avoid division by zero
-        gc_fraction = (g_count + c_count) / total_length
-        gc_percentage = gc_fraction * 100
-    else:
-        gc_fraction = 0
-        gc_percentage = 0
+def most_frequent_kmers(Text, k):
+    freq_map = {}
+    max_count = 0
+    result = []
 
-    print (seq_record.id)
-    print (seq_record.seq)
-    print (len(seq_record.seq))
-    print (f"GC content: {gc_percentage:.5f}") # Print GC percentage
-    print (f"GC fraction: {gc_fraction:.4f}") # Print GC fraction
-    print (seq_record)
+    for i in range(len(Text) - k + 1):
+        pattern = Text[i:i + k]
+        if pattern not in freq_map:
+            freq_map[pattern] = 1
+        else:
+            freq_map[pattern] += 1
+
+        if freq_map[pattern] > max_count:
+            max_count = freq_map[pattern]
+
+    for pattern in freq_map:
+        if freq_map[pattern] == max_count:
+            result.append(pattern)
+
+    return result
+
+
+Text = "TEXT"
+k = INTEGER
+
+print(most_frequent_kmers(Text, k))
+
 
 - How I verified correctness (tests, sample data): Checked with rosalind
 - 

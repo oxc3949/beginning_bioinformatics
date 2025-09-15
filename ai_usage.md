@@ -1,34 +1,35 @@
 # AI Use Log
 - Tool/model & version: ChatGPT
-- What I asked for: Provide pseudocode for the Rosalind problem 13.
+- What I asked for: Provide pseudocode for the Rosalind problem 15.
 - Snippet of prompt(s): Provide pseudocode for the following problem
-"Find a position in a genome minimizing the skew.
-Given: A DNA string Genome.
+"Given: A DNA string Pattern and an integer d.
+Return: The collection of strings Neighbors(Pattern, d)."
 Return: All integer(s) i minimizing Skew(Prefixi (Text)) over all values of i (from 0 to |Genome|).
 - What I changed before committing: added
 
-def MinSkewPositions(Genome):
-  skew_list = [0]
-  min_skew_positions = []
-  for i in range(1, len(Genome)+1):
-    current_skew = skew_list[i-1]
-    if Genome[i-1] == 'C':
-      skew_list.append(current_skew - 1)
-    elif Genome [i-1] == 'G':
-      skew_list.append(current_skew + 1)
-    else: # A or T
-      skew_list.append(current_skew) # A and T don't change the skew
+def hamming_distance(s1, s2):
+    return sum(1 for a, b in zip(s1, s2) if a != b)
 
-  min_skew = min(skew_list)
+def neighbors(Pattern, d):
+    if d == 0:
+        return {Pattern}
+    if len(Pattern) == 1:
+        return {"A", "C", "G", "T"}
 
-  for i in range(len(skew_list)):
-    if skew_list[i] == min_skew:
-      min_skew_positions.append(i)
+    Neighborhood = set()
+    SuffixNeighbors = neighbors(Pattern[1:], d)
 
-  return (min_skew_positions)
+    for text in SuffixNeighbors:
+        if hamming_distance(Pattern[1:], text) < d:
+            for nucleotide in ["A", "C", "G", "T"]:
+                Neighborhood.add(nucleotide + text)
+        else:
+            Neighborhood.add(Pattern[0] + text)
+    return Neighborhood
+s1="ACG"
+d= 1
+print('\n'.join(neighbors(s1, d)))
 
-Genome = "CCTATCGGTGGATTAGCATGTCCCTGTACGTTTCGCCGCGAACTAGTTCACACGGCTTGATGGCAAATGGTTTTTCCGGCGACCGTAATCGTCCACCGAG"
-print(MinSkewPositions(Genome))
 
 - How I verified correctness (tests, sample data): Checked with rosalind
   

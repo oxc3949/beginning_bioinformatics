@@ -1,10 +1,11 @@
 # AI Use Log
 - Tool/model & version: ChatGPT
-- What I asked for: Provide pseudocode for the Rosalind problem 17.
+- What I asked for: Provide pseudocode for the Rosalind problem 18.
 - Snippet of prompt(s):
-For the following problem Find the most frequent k-mers with mismatches in a string.
-Given: A string Text as well as integers k and d. Return: All most frequent k-mers with up to d mismatches in Text. show me pseudo code that works in the context of k ≤ 12 and d ≤ 3
-Return: All integer(s) i minimizing Skew(Prefixi (Text)) over all values of i (from 0 to |Genome|).
+Show me pseudocode for the following problem: Find the most frequent k-mers (with mismatches and reverse complements) in a DNA string.
+Given: A DNA string Text as well as integers k and d.
+Return: All k-mers Pattern maximizing the sum Countd(Text, Pattern) + Countd(Text, Pattern) over all possible k-mers
+
 - What I changed before committing: added
 
 def hamming_distance(s1, s2):
@@ -25,36 +26,37 @@ def neighbors(Pattern, d):
                 Neighborhood.add(nucleotide + text)
         else:
             Neighborhood.add(Pattern[0] + text)
+
     return Neighborhood
 
-def most_frequent_kmers_with_mismatches(Text, k, d):
+def reverse_complement(Pattern):
+    complement = {'A':'T', 'T':'A', 'C':'G', 'G':'C'}
+    return ''.join(complement[nuc] for nuc in reversed(Pattern))
+
+def most_frequent_kmers_with_mismatches_and_rc(Text, k, d):
     freq_map = {}
-    n = len(Text)
-    for i in range(n - k + 1):
+    max_count = 0
+    result = []
+
+    for i in range(len(Text) - k + 1):
         pattern = Text[i:i + k]
         neighborhood = neighbors(pattern, d)
-        for neighbor in neighborhood:
-            if neighbor not in freq_map:
-                freq_map[neighbor] = 1
-            else:
-                freq_map[neighbor] += 1
+        RC_neighborhood = set(reverse_complement(p) for p in neighborhood)
 
-    max_count = 0
-    for pattern in freq_map:
-        if freq_map[pattern] > max_count:
-            max_count = freq_map[pattern]
+        for neighbor in neighborhood.union(RC_neighborhood):
+            freq_map[neighbor] = freq_map.get(neighbor, 0) + 1
+            if freq_map[neighbor] > max_count:
+                max_count = freq_map[neighbor]
 
-    freq_patterns = []
     for pattern in freq_map:
         if freq_map[pattern] == max_count:
-            freq_patterns.append(pattern)
+            result.append(pattern)
 
-    return freq_patterns
+Text = "ATGGTGCACGGTAAGCGTGCTACGGCTACTTTCGTAAATGGTGCACGATGGTGCACGGTAAGCGTGCTACGGCTGCTACGGCTGTAAGCGTACTTTCGTAAACTTTCGTAAGTAAGCGTATGGTGCACGGCTACGGCTATGGTGCACGATGGTGCACGCTGGTCATCTATGGTGCACGACTTTCGTAAGTAAGCGTGTAAGCGTACTTTCGTAAGTAAGCGTCTGGTCATCTGTAAGCGTGCTACGGCTATGGTGCACGGCTACGGCTGCTACGGCTGTAAGCGTATGGTGCACGGCTACGGCTATGGTGCACGATGGTGCACGATGGTGCACGACTTTCGTAAGTAAGCGTCTGGTCATCTATGGTGCACGGTAAGCGTGTAAGCGTCTGGTCATCTGTAAGCGTGTAAGCGTCTGGTCATCTGCTACGGCTACTTTCGTAAGCTACGGCTGTAAGCGTATGGTGCACGACTTTCGTAACTGGTCATCTCTGGTCATCTATGGTGCACGATGGTGCACGGTAAGCGTATGGTGCACGCTGGTCATCTCTGGTCATCTATGGTGCACGCTGGTCATCTGCTACGGCTATGGTGCACGGCTACGGCTGCTACGGCTGTAAGCGTCTGGTCATCTCTGGTCATCTATGGTGCACGACTTTCGTAAACTTTCGTAAGTAAGCGTGCTACGGCTGCTACGGCTCTGGTCATCTACTTTCGTAAGCTACGGCTATGGTGCACGCTGGTCATCTCTGGTCATCTCTGGTCATCTATGGTGCACGGCTACGGCTACTTTCGTAACTGGTCATCTGTAAGCGTATGGTGCACGATGGTGCACGATGGTGCACGACTTTCGTAACTGGTCATCTACTTTCGTAACTGGTCATCTCTGGTCATCTGTAAGCGTGCTACGGCTGTAAGCGTACTTTCGTAAGTAAGCGTGTAAGCGTCTGGTCATCTACTTTCGTAAGCTACGGCTGCTACGGCTGTAAGCGT" 
+k = 7 
+d = 2 
 
-Text = "CGGTTGGGGGTGTAGCAAGAGATGGTCGAGATGGTCGAGATGGTCGGTGTAGCAAGCTTACTTACGGTTGGGGGTGTAGCAAGTGGCATCAATCGGTTGGGGCTTACTTACGGTTGGGGCTTACTTAAGATGGTCGGTGTAGCAAGCGGTTGGGGGTGTAGCAAGTGGCATCAATGTGTAGCAAGTGGCATCAATCTTACTTACGGTTGGGGCGGTTGGGGCGGTTGGGGTGGCATCAATGTGTAGCAAGCGGTTGGGGCGGTTGGGGGTGTAGCAAGTGGCATCAATCGGTTGGGGCGGTTGGGGAGATGGTCGCGGTTGGGGCTTACTTAAGATGGTCGGTGTAGCAAGAGATGGTCGGTGTAGCAAGAGATGGTCGTGGCATCAATGTGTAGCAAGTGGCATCAATGTGTAGCAAGCTTACTTACTTACTTAAGATGGTCGTGGCATCAATGTGTAGCAAGCTTACTTAGTGTAGCAAGCTTACTTACGGTTGGGGCGGTTGGGGCGGTTGGGGGTGTAGCAAGTGGCATCAATAGATGGTCGGTGTAGCAAGTGGCATCAATCGGTTGGGGAGATGGTCGCTTACTTACGGTTGGGGCTTACTTAAGATGGTCGCGGTTGGGGAGATGGTCGAGATGGTCGAGATGGTCGAGATGGTCGGTGTAGCAAGAGATGGTCGTGGCATCAATTGGCATCAATAGATGGTCGTGGCATCAATAGATGGTCGTGGCATCAATGTGTAGCAAGTGGCATCAATAGATGGTCGGTGTAGCAAGTGGCATCAATCTTACTTACTTACTTACTTACTTACGGTTGGGGTGGCATCAATTGGCATCAATCGGTTGGGGTGGCATCAATCGGTTGGGGGTGTAGCAAGCGGTTGGGGAGATGGTCGGTGTAGCAAGCTTACTTA"
-k = 6
-d = 3
-print(" ".join(most_frequent_kmers_with_mismatches(Text, k, d)))
+print(" ".join(most_frequent_kmers_with_mismatches_andRC(Text, k, d)))
 
 - How I verified correctness (tests, sample data): Checked with rosalind
   
